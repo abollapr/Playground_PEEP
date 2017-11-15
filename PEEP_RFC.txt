@@ -1,0 +1,840 @@
+
+
+
+Network Working Group                                      P. Group, Ed.
+Request for Comments: 1               JHU Network Security Students Fall
+Category: Standards Track                                           2017
+                                                            October 2017
+
+
+                    Playground Request For Comments
+
+Abstract
+
+   This document describes the Players Enjoy Eavesdropping Protocol
+   (PEEP).  This is the very first version of PEEP Protocol which is an
+   overlay network protocol designed over the Playground for the
+   reliable transmission and delivery of the data solely for learning
+   and experimental purposes for network security.  This document
+   explains the specification of PEEP Protocol, its working and
+   functions.  This PRFC specifices the format standards for PRFC's.
+
+Status of this Memo
+
+   This document specifies a Playgrounds standards track protocol for
+   the Playground Experiment, and requests discussion and suggestions
+   for improvements.  Distribution of this memo is unlimited.
+
+Copyright Notice
+
+   Copyright (c) 2017 SETH JAMES NIELSON.  All rights reserved.
+
+   This document is used solely for educational purposes.  Any citations
+   within this document are also for educational purposes and also for
+   technical reference.  If any of these cited elements are protected
+   under copyright, their inclusion here falls under Fair Use
+   provisions.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Group                        Standards Track                    [Page 1]
+
+RFC 1                            PRFC's                     October 2017
+
+
+Table of Contents
+
+   1.  Introduction . . . . . . . . . . . . . . . . . . . . . . . . .  3
+     1.1.  Requirements Language  . . . . . . . . . . . . . . . . . .  3
+   2.  Copyright Information  . . . . . . . . . . . . . . . . . . . .  3
+   3.  Purpose: . . . . . . . . . . . . . . . . . . . . . . . . . . .  4
+   4.  Technical Background:  . . . . . . . . . . . . . . . . . . . .  5
+   5.  Session establishment: . . . . . . . . . . . . . . . . . . . .  5
+   6.  Session Termination: . . . . . . . . . . . . . . . . . . . . .  6
+   7.  Data Transmission: . . . . . . . . . . . . . . . . . . . . . .  7
+   8.  Packet descriptions: . . . . . . . . . . . . . . . . . . . . .  8
+   9.  Error Transmission:  . . . . . . . . . . . . . . . . . . . . . 10
+   10. State Machines . . . . . . . . . . . . . . . . . . . . . . . . 11
+   11. Normative References . . . . . . . . . . . . . . . . . . . . . 12
+   Author's Address . . . . . . . . . . . . . . . . . . . . . . . . . 13
+   Intellectual Property and Copyright Statements . . . . . . . . . . 14
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Group                        Standards Track                    [Page 2]
+
+RFC 1                            PRFC's                     October 2017
+
+
+1.  Introduction
+
+   The Players Enjoy Eves Dropping Protocol (PEEP) intended for use as a
+   highly reliable end to end communication between hosts in a network
+   that works on PLAYGROUND.  This document describes the specifications
+   of the protocol, functionality and the workflow to achieve what its
+   built for.
+
+   This memo describes an RFC Standard for the Protocol PEEP abbreviated
+   for Player's Enjoy Eavesdropping Protocol
+
+1.1.  Requirements Language
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
+   document are to be interpreted as described in RFC 2119 [RFC2119].
+
+
+2.  Copyright Information
+
+   The PLAYGROUND experiment is still new and has not yet developed a
+   policy that has been reviewed by legal counsel.  However, at present,
+   the following text MUST be used in the PRFC's.
+
+   The copyright notice on the front page of the PRFC should read:
+   "Copyright (c) 2017 SETH JAMES NIELSON.  All rights reserved.
+
+   This document is used solely for educational purposes.  Any citations
+   within this document are also for educational purposes and also for
+   technical reference.  If any of these cited elements are protected
+   under copyright, their inclusion here falls under Fair Use
+   provisions."
+
+   Student authors MUST grant copyrights to SETH JAMES NIELSON.
+   However, they may also retain copyrights for themselves and add their
+   names to the copyright notice accordingly.
+
+   The final page of the PRFC MUST include a section entitled "Full
+   Copyright Statement" that reads:
+
+   "Copyright (C) Seth James Nielson (2017).  All Rights Reserved.
+
+   This document and translations of it may be copied and furnished to
+   others, and derivative works that comment on or otherwise explain it
+   or assist in its implementation may be prepared, copied, published
+   and distributed, in whole or in part, without restriction of any
+   kind, provided that the above copyright notice and this paragraph are
+   included on all such copies and derivative works.  However, this
+
+
+
+Group                        Standards Track                    [Page 3]
+
+RFC 1                            PRFC's                     October 2017
+
+
+   document itself may not be modified in any way, such as by removing
+   the copyright notice or references to the PLAYGROUND experiment or
+   other associated organizations, except by explicit permission.
+
+   The limited permissions granted above are perpetual and will not be
+   revoked by SETH JAMES NIELSON or his successors or assigns.
+
+   This document and the information contained herein is provided on an
+   "AS IS" basis and SETH JAMES NIELSON and associated academic
+   institutions DISCLAIM ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING
+   BUT NOT LIMITED TO ANY WARRANTY THAT THE USE OF THE INFORMATION
+   HEREIN WILL NOT INFRINGE ANY RIGHTS OR ANY IMPLIED WARRANTIES OF
+   MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE."
+
+   After the "Full Copyright Statement" the PRFC MUST include a section
+   entitled "Intellectual Property" that reads:
+
+   The PLAYGROUND framework and student submissions for PLAYGROUND are
+   intended to be free of any intellectual property conflicts.  All
+   submitting parties, especially students, are not allowed to submit
+   source code, specifications, or other components that are known to be
+   protected by copyright, patents, or other IP mechanisms.  Students
+   submitting creative content grant shared rights and ownership of
+   their content to the PLAYGROUND project.  Specifically, any
+   submission can be used in future educational settings including
+   subsequent PLAYGROUND experiments.
+
+   Any interested party is invited to bring to the experiment director's
+   attention any copyrights, patents or patent applications, or other
+   proprietary rights which may cover technology that may be currently
+   in use without permission.
+
+   It should be noted that these statements have not been reviewed by
+   legal counsel.  Moreover, the academic institutions at which
+   PLAYGROUND experiments take place may have additional or even
+   conflicting copyright and intellectual property rules.  Accordingly,
+   concerned parties may need to contact their own lawyer and/or
+   resources at their institution to understand the rights and
+   limitations associated with code donated to a PLAYGROUND experiment."
+
+   As with the initial copyright notice, the Copyright assignment to
+   Seth James Nielson can be agumented the the names of the authors.
+
+
+3.  Purpose:
+
+   The purpose of the PEEP layer is to provide a reliable layer for data
+   transmission between two ends.  It does this by handling errors that
+
+
+
+Group                        Standards Track                    [Page 4]
+
+RFC 1                            PRFC's                     October 2017
+
+
+   can be caused during transmission with the packets getting dropped,
+   corrupted or delayed by the transport medium that is being used
+   between the two ends communicating.  PEEP protocol sits right above
+   the wire protocol in the heirachial structure of the playground
+   model.  PEEP is capable of accepting any data from the higher
+   protocol and then writing it down the wire and ensuring its reliable
+   delivery.
+
+
+4.  Technical Background:
+
+   PEEP protocol is a reliable transport layer that sits in the
+   PLAYGROUND model of networking.  The lowest layer of the playground
+   model is the wire protocol.  The PEEP protocol sits right above the
+   wire protocol layer.  The PEEP protocol takes data from the above
+   layer and sends them over an negotiated session between the two ends.
+   Every entitiy running the PEEP protocol must maintain a PEEP address
+   and a port number.  The IP address and the port number together are
+   used by the other end's PEEP protocol is used to connect and send
+   data.  PEEP works by encapsulating the data that it receives from the
+   higher layer and adding meta data onto it that helps in keeping track
+   of the packet that is both transmitted and received.  The PEEP packet
+   that is used to carry data has been defined in detail under Packet
+   Description.
+
+
+5.  Session establishment:
+
+   PEEP performs a 3 way hanshake to establish a session.  This results
+   in a session over which the data is transmitted.  Since PEEP is an
+   end to end communication protocol between two parties, both the
+   parties must perform a PEEP handshake and establish the session
+   before transmition of any data payload can occur.  All data
+   transmission must also stop post the session termination.  PEEP
+   differentiates between multiple sessions based on a combination of
+   port numbers and PEEP addresses that are used on both the ends.  For
+   example if the server is listening on a source port 8888 for all
+   incoming connections, the server will be able to differentiate
+   between different clients based on the combination of port and the
+   PEEP address from where the connection is coming in.
+
+   For this section we can consider two ends PEEP A and PEEP B. PEEP A
+   is initiating the handshake and PEEP B is the responder.  PEEP A
+   starts off from the LISTEN state and the Type field needs to be set
+   to 0 (indicating a SYN Packet) in order to indicate to the other end
+   about a request to initiate a PEEP handshake.The sequence number of
+   the SYN packet must have a sequence number and not an acknowldgement
+   number.  The sequence number of the SYN packet can be based on any
+
+
+
+Group                        Standards Track                    [Page 5]
+
+RFC 1                            PRFC's                     October 2017
+
+
+   number generation system but must be different for every SYN packet
+   that is sent out, this is to make sure that no two connections of
+   PEEP endup with the same sequence numbers.  PEEP B may or may not to
+   acknowledge every SYN packet it receives.  Once a SYN packet is
+   received, the state will move to the SYN RCVD state from LISTEN state
+   and then if PEEP B decides to proceed with the handshake, it responds
+   with the Type field set to 1 (SYN-ACK packet) with a sequence number
+   and an acknowledgment field set to indicate that it received the SYN
+   packet.  PEEP A which receives the SYN-ACK packet would then respond
+   back with a PEEP packet with a type set to 2 (indicating an ACK
+   packet) and move to the TRANSMISSION state.  The sequence number and
+   the acknowldgement number of the ACK packet needs to be in accordance
+   with the PEEP SYN packet that was initially sent.
+
+   Once the session has been established, both the parties are free to
+   exchange data.  The sequence number range established from the
+   handshake will be continued further from this point.
+
+
+6.  Session Termination:
+
+   A graceful shutdown of the session should be maintained at the PEEP
+   layer.  To achieve this, when the PEEP layer receives the shutdown
+   signal from the higher protocol, it sends out a RIP packet to the
+   other side, signaling that PEEP connection needs to be terminated.
+   The RIP packet is identified by the type field being set to 3.  When
+   the other side receives the RIP packet, it should send out a RIP-ACK
+   packet, type field set to 4, to acknowledge for the RIP packet.  Once
+   the RIP-ACK is sent out, the remaining packets in the buffer are
+   cleared and an acknowledgement for them are awaited.
+
+   When the sender receives an acknowledgement for all the packets sent
+   out, it initiates a RIP message and waits for the RIP-ACK from the
+   other side before finally terminating the connection.  The other side
+   closes the connection gracefully post the RIP-ACK is sent.
+
+   There are three cases for closing a connection: -
+
+   1.  The user initiates the RIP packet: When the user initiates a RIP
+       packet, it is sent out to the other side and no further data
+       packets are sent out from the PEEP layer.  The PEEP layer enters
+       a RIP-WAIT state where it is only received packets and
+       acknowledging the same and not sending out any data packets.  It
+       continues to do till a RIP is received from the other side and
+       then sends out the RIP-ACK to terminate the connection.
+
+   2.  The PEEP layer receives a RIP message: When an unsolicited RIP
+       packet is received by the PEEP layer, it first acknowledges the
+
+
+
+Group                        Standards Track                    [Page 6]
+
+RFC 1                            PRFC's                     October 2017
+
+
+       sender about receiving the connection close request by sending a
+       RIP-ACK packet.  It then empties the remaining packets in the
+       buffer and sends out a final RIP packet to end the connection.
+       The receiver, upon receiving the RIP packet, s ends out the RIP-
+       ACK packet and clears the connection gracefully.
+
+   3.  Both users simultaneously close the connection: When users on
+       both the sides simultaneously close a connection, the PEEP layers
+       on both the sides, upon receiving the signal, send out the RIP
+       packets.  Both the sides, upon receiving the RIP packet, clear
+       their buffer and send out the RIP-ACK packets.  Connection is
+       closed on both the sides once final RIP-ACK is received.
+
+   Client--------------------------RIP X----------------------->Server
+   Client---------------------RIP-ACK X+1--------------------- Server
+   Client-------------------Clear the buffer------------------Server
+   Client------------------------RIP Y-----------------------Server
+   Client ---------------------RIP-ACK Y+1--------------------Server
+   (close) (close)
+
+
+7.  Data Transmission:
+
+   The PEEP layer is a stream oriented protocol.  The data transmission
+   at the PEEP layer can be thought of as a stream of bytes being sent
+   out in chunks from the sender to the receiver.  After the handshake,
+   a PEEP connection is established between the two parties.
+
+   Once the sender is ready to send the data out to the PEEP layer, the
+   PEEP layer starts accepting data in chunks of 2048 bytes.  If the
+   data received from the upper layer is larger than 2048 bytes, they
+   are broken down into chunks of 2048 bytes (maximum size of payload a
+   PEEP packet can encapsulate).  The data payload received by the PEEP
+   protocol is encapsulated into the Buffer field.
+
+   A PEEP data packet is marked by the Type field set to 5.  This
+   indicates the receiving side that the PEEP packet contains data for
+   the upper layers.  On the client side, the Sequence Number header
+   field for the first data packet sent is set equal to the sequence
+   number of the ACK packet sent during the PEEP handshake.  For
+   subsequent data packets, the sequence number is determined by adding
+   the sequence number of the previous packet with the length of the
+   previous packet.  This falls in line with the stream oriented
+   approach PEEP follows to indicate the chunk of data sent from the
+   stream of data.  On the server side, the first data packet sent has
+   the sequence number of the SYN-ACK packet sent during the handshake.
+   And similarly, for the subsequent packets, the sequence number is
+   determined by adding the sequence number and length of the previous
+
+
+
+Group                        Standards Track                    [Page 7]
+
+RFC 1                            PRFC's                     October 2017
+
+
+   packet sent.
+
+   On the sending side, the Checksum header field of the PEEP packet
+   must be calculated to maintain the integrity of the message.  It is
+   calculated by first setting the checksum field to 0 and then
+   calculating the checksum using adler32 technique on the entire PEEP
+   packet, after setting all the fields.  The calculated checksum value
+   is put into the checksum field and sent out.  On the receiving side,
+   the value from the checksum field is derived, set to 0, calculated on
+   the entire received packet with the same technique and matched with
+   the derived value to see if it matches.  If it fails, the packet is
+   dropped.
+
+   Once the receiver receives a PEEP packet, it must send an
+   acknowledgement to the sender about the packet.  To do so, a packet
+   with Type field set to 2 is sent out.  This packet uses the
+   Acknowledgement header field and sets it with the right
+   acknowledgement number to inform the sender of the correct packet
+   received.  The acknowledgement number is calculated by adding the
+   sequence number with the length of the packet received for which the
+   acknowledgement is being sent out.  Sending cumulative
+   acknowledgements can also be an option for the receiving end.
+
+   To make PEEP a reliable layer, the use of sequence and
+   acknowledgement numbers are utilized.  For every data packet sent, an
+   acknowledgement packet needs to be received with the expected
+   acknowledgement number.  In case the acknowledgement packet is not
+   received within a particular time period, a re-transmission of the
+   packet must be done to maintain reliability.  To keep in line with
+   this principle, sending and receiving windows are maintained on
+   either side.
+
+
+8.  Packet descriptions:
+
+   PEEP Header
+
+   PEEPPacket has multiple fields, Identifier and Version that helps
+   pinpoint a PEEP Layer packet.  A PEEP header consists of:-
+
+   DEFINITION_IDENTIFIER
+
+   This field consists of the PEEPPacket.  This can be used to identify
+   the type of the packet received is encapsulated with the PEEP header.
+
+   DEFINITION_VERSION
+
+   This field specifies the version of the PEEPPacket received.  This
+
+
+
+Group                        Standards Track                    [Page 8]
+
+RFC 1                            PRFC's                     October 2017
+
+
+   must consist of 1.0.  This field is reserved for future use for
+   further enhancements.
+
+   FIELDS
+
+   This consists of the following fields that helps describe the packet
+   specifications:-
+
+   PEEP HEADER FORMAT
+
+   0 1 2 3 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0
+   1 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ |
+   DEFINTION_IDENTIFIER | DEFINITION_VERSION |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ |
+   SequenceNumber |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ |
+   Acknowledgment |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ |
+   Checksum | |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ |
+   Data(BUFFER) | | | |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   Figure 1 PEEP HEADER FORMAT
+
+   Type Field : 8 bits
+
+   This field must be 0, 1, 2, 3, 4, 5 based on the type of the
+   PEEPPacket being.
+
+   1.  Type 0: SYN
+
+   2.  Type 1: SYN-ACK
+
+   3.  Type 2: ACK
+
+   4.  Type 3: RIP
+
+   5.  Type 4: RIP-ACK
+
+   6.  Type 5: Data
+
+   This is a MANDATORY field.
+
+   SequenceNumber: 32 bits
+
+   The sequence number contains the initially randomized value for every
+   session and subsequently used as a reference for further PEEP
+   sessions flows to ensure reliability.
+
+
+
+Group                        Standards Track                    [Page 9]
+
+RFC 1                            PRFC's                     October 2017
+
+
+   This is an OPTIONAL field.
+
+   Acknowledgment : 32
+
+   The acknowledgement number contains the subsequent values for
+   sequence numbers and length of the data received.  This must be set
+   to zero in the SYN packet.
+
+   This is an OPTIONAL field.
+
+   Checksum
+
+   This contain field contains the hash value of the ENTIRE PEEP packet
+   sent.  The hash function in use must be Adler32 which is truncated to
+   16 bits.  While computing the checksum, the checksum field itself is
+   replaced with zeros.  This gives the PEEP protection against
+   corruption of data along in the network.  This helps maintain the
+   message or packet integrity.
+
+   This is a MANDATORY field.
+
+   Data
+
+   This field is an OPTIONAL field.  This fields purpose is to hold the
+   data/packet that has been received from the layers above.  In short
+   this shall be the payload that we will be ensuring delivery as the
+   PEEP layer.
+
+
+9.  Error Transmission:
+
+   The PEEP protocol needs maintain reliable communication by taking
+   into consideration the errors it may encounter.  To achieve such a
+   state, timers should be maintained on either end, to take into
+   consideration that a packet could be lost on the way to the other
+   side.  If the acknowledgement for a certain packet is not received
+   till the timer expires, the sender should re-send the packet to the
+   other side.
+
+   For a situation where, such as delay in the wire protocol, packets
+   might be received in an out-of-order fashion.  In order to maintain
+   the efficiency of the PEEP layer, windows should be maintained on
+   either side with the out-of-order packets.  These packets must be re-
+   arranged before being sent out to the higher layers.
+
+   To maintain the sequence of the data on either side, the receiver
+   must acknowledge only for the amount of data it has received in order
+   and not for out-of-order packets.  Example diagram below shows that
+
+
+
+Group                        Standards Track                   [Page 10]
+
+RFC 1                            PRFC's                     October 2017
+
+
+   since the second packet from client to server was dropped on the way
+   and the third out-of-order packet was received, the server must not
+   send an acknowledgement for the third packet till the second packet
+   is received..
+
+   Client---------------------Seq=x, Len=10------------------------
+   Server Client------------------------
+   Ack=x+10---------------------------Server Client---------------------
+   Seq=x+10, Len=20--------------------- Server
+   Client---------------------Seq=x+30, Len=30-------------------Server
+   Client----------------------Ack=x+10----------------------------
+   Server
+
+
+10.  State Machines
+
+   PEEP undergoes multiple state transitions starting from Listening
+   state up until the Closed state.  The PEEP entity is always in the
+   listening state of the PEEP ports which can change once a PEEP
+   message is either sent or received.  The Listening state will advance
+   to the TRANSMISSION state before the communication is done with the
+   data to the application layer via either SYN-RCVD or SYN-SENT state.
+   The connection state will be changing from one to another only in
+   response to the events.  The events are SEND, RCV and CLOSE that
+   contain the packets SYN, SYN-ACK, ACK, RIP, RIP-ACK and DATA.
+
+   Below are all the states that PEEP has along with their purpose in
+   brief:
+
+   LISTENING: This state represents waiting for a connection request
+   from another PEEP entity.
+
+   SYN-SENT: This state represents when the PEEP entity has sent the SYN
+   as a connection request and is waiting for a SYN-ACK or ACK message.
+
+   SYN-RCVD: This state is attained when the PEEP entity has received a
+   connection request (SYN) and has acknowledged (SYN-ACK) it but is
+   still waiting for the other end to acknowledge (ACK) its own
+   connection request.
+
+   TRANSMISSION: This state represents a PEEP connection established
+   state which implies both the parties are connected successfully via
+   PEEP and the data can be delivered to the application user.  This
+   state is necessary in order for the data transmission to work between
+   PEEP entities.
+
+   RIP-ACK WAIT: This state implies the PEEP entity is waiting for the
+   remote end to send the connection termination request or the
+
+
+
+Group                        Standards Track                   [Page 11]
+
+RFC 1                            PRFC's                     October 2017
+
+
+   acknowledgement to its own connection termination request.
+
+   CLOSE-WAIT: This state constitutes waiting for the local application
+   to sent the connection termination request to the other end.
+
+   CLOSING: This state represents waiting for the RIP-ACKs either to be
+   sent by the local application user to other end or to be sent by the
+   remote end for the respective connection termination requests.
+
+   WAIT-RIP: This state represents waiting for the connection
+   termination request from the remote end.
+
+   FINAL RIP-ACK: This state implies the PEEP entity waiting for the
+   remote end to acknowledge the connection termination request.
+
+   CLOSED: This state represents no connection at all
+
+   Below is the state diagram that shows the state changes in the PEEP
+   when the event occurs:
+
+   +-----------+ | LISTENING | +-----------+ rcv SYN | | SEND
+   ----------- | | ------- +---------+ snd SYN,ACK / \ snd SYN
+   +---------+ | | ----------------- ------------------>| | | SYN- | rcv
+   SYN | SYN- | | RCVD |
+   -----------------------------------------------| SENT | | | snd ACK |
+   | | |------------------ -------------------| | +---------+ rcv ACK of
+   SYN \ / rcv SYN,ACK +---------+ | -------------- | | ----------- | |
+   | snd ACK | V V | CLOSE +--------------+ | ------- |TRANSMISSION | |
+   snd RIP +--------------+ | CLOSE | | rcv RIP V ------- | | -------
+   +---------+ snd RIP / \ snd ACK +---------+ |RIP-ACK |
+   ----------------- ------------------>| CLOSE | | WAIT
+   |------------------ | WAIT | +---------+ rcv RIP \ +---------+ | rcv
+   ACK of RIP ------- | CLOSE | | -------------- snd ACK | ------- | V V
+   snd RIP V +---------+ +---------+ +---------+ |WAIT RIP | | CLOSING |
+   | LAST-ACK| +---------+ +---------+ +---------+ | rcv ACK of RIP |
+   rcv ACK of FIN | | rcv RIP -------------- | -------------- | |
+   ------- V V \ snd ACK +---------+
+   ------------------------------------------------------>| CLOSED |
+   +---------+ PEEP Connection State Diagram Figure 6.
+
+
+11.  Normative References
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119, DOI 10.17487/
+              RFC2119, March 1997,
+              <https://www.rfc-editor.org/info/rfc2119>.
+
+
+
+
+Group                        Standards Track                   [Page 12]
+
+RFC 1                            PRFC's                     October 2017
+
+
+   [RFC2360]  Scott, G., "Guide for Internet Standards Writers", BCP 22,
+              RFC 2360, DOI 10.17487/RFC2360, June 1998,
+              <https://www.rfc-editor.org/info/rfc2360>.
+
+
+Author's Address
+
+   Prashanth Antara Aditya Sagar (editor)
+   JHU Network Security Students Fall 2017
+   JHU 160 Malone Hall/3400 North Charles St.
+   Baltimore, MD  21218
+   USA
+
+   Phone: +1 609 508 3103
+   Email: pvenkat7@jhu.edu
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Group                        Standards Track                   [Page 13]
+
+RFC 1                            PRFC's                     October 2017
+
+
+Full Copyright Statement
+
+   Copyright (C) Seth James Nielson (2017).  All Rights Reserved.
+
+   This document and translations of it may be copied and furnished to
+   others, and derivative works that comment on or otherwise explain it
+   or assist in its implementation may be prepared, copied, published
+   and distributed, in whole or in part, without restriction of any
+   kind, provided that the above copyright notice and this paragraph are
+   included on all such copies and derivative works.  However, this
+   document itself may not be modified in any way, such as by removing
+   the copyright notice or references to the PLAYGROUND experiment or
+   other associated organizations, except by explicit permission.
+
+   The limited permissions granted above are perpetual and will not be
+   revoked by SETH JAMES NIELSON or his successors or assigns.
+
+   This document and the information contained herein is provided on an
+   "AS IS" basis and SETH JAMES NIELSON and associated academic
+   institutions DISCLAIM ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING
+   BUT NOT LIMITED TO ANY WARRANTY THAT THE USE OF THE INFORMATION
+   HEREIN WILL NOT INFRINGE ANY RIGHTS OR ANY IMPLIED WARRANTIES OF
+   MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
+
+
+Intellectual Property
+
+   The PLAYGROUND framework and student submissions for PLAYGROUND are
+   intended to be free of any intellectual property conflicts.  All
+   submitting parties, especially students, are not allowed to submit
+   source code, specifications, or other components that are known to be
+   protected by copyright, patents, or other IP mechanisms.  Students
+   submitting creative content grant shared rights and ownership of
+   their content to the PLAYGROUND project.  Specifically, any
+   submission can be used in future educational settings including
+   subsequent PLAYGROUND experiments.
+
+   Any interested party is invited to bring to the experiment director's
+   attention any copyrights, patents or patent applications, or other
+   proprietary rights which may cover technology that may be currently
+   in use without permission.
+
+   It should be noted that these statements have not been reviewed by
+   legal counsel.  Moreover, the academic institutions at which
+   PLAYGROUND experiments take place may have additional or even
+   conflicting copyright and intellectual property rules.  Accordingly,
+   concerned parties may need to contact their own lawyer and/or
+   resources at their institution to understand the rights and
+
+
+
+Group                        Standards Track                   [Page 14]
+
+RFC 1                            PRFC's                     October 2017
+
+
+   limitations associated with code donated to a PLAYGROUND experiment.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Group                        Standards Track                   [Page 15]
+
