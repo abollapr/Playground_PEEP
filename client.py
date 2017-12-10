@@ -166,31 +166,39 @@ class PEEPClient(StackingProtocol):
                 if checkvalue:
                     if self._state == 2:
                         self.tb.cancel()
-
                     print("====================Got Encapasulated Packet and Deserialized==================")
                     #print(packet.Data)
                     self._state +=1
                     #self.global_received_ack = packet.Acknowledgement
                     self.global_packet_size = len(packet.Data)
-                    print("The size of packet is:", self.global_packet_size)
-                    print("Seq number of incoming packet", packet.SequenceNumber)
-                    print("Ack Number of incoming packet", packet.Acknowledgement)
+                    print("Data packet received with Seq. No.:", packet.SequenceNumber, " Ack. No.:", packet.Acknowledgement,"and size:", self.global_packet_size, "bytes.")
                     self.receive_window(packet)
                 else:
                     print("Corrupt Data packet received. Please check on server end.")
 
             elif packet.Type == 2:
                 if checkvalue:
+                    seqs = list(self.t.keys())
+                    for chabi in seqs:
+                        if packet.Acknowledgement > chabi:
+                            (self.t[chabi]).cancel()
+                            self.t.pop(chabi)
+                    print("ACK Received from the server with Ack. No.: ", packet.Acknowledgement)
                     self.prev_ack_number = packet.Acknowledgement
                     self.pop_sending_window(packet.Acknowledgement)
-                    print("ACK Received from the server. Removing data from buffer.", packet.Acknowledgement)
                     self.global_received_ack = packet.Acknowledgement
 
             elif packet.Type == 3:
                 if checkvalue:
                     self.rip_received = 1
+                    seqs = list(self.t.keys())
+                    for chabi in seqs:
+                        if packet.Acknowledgement > chabi:
+                            (self.t[chabi]).cancel()
+                            self.t.pop(chabi)
                     self.RIP_PACKET = packet
                     print("RIP Received from Server with Seq. No.:", packet.SequenceNumber,". Sending RIP-ACK")
+                    self.pop_sending_window(6)
                 else:
                     print("Corrupt RIP packet received. Please check on server end.")
 
@@ -199,6 +207,8 @@ class PEEPClient(StackingProtocol):
                     self.ripack_received = 1
                     self.pop_sending_window(packet.Acknowledgement)
                     print("RIP-ACK Received from Server. Closing down the connection.")
+                    exc=0
+                    self.connection_lost(exc)
                 else:
                     print("Corrupt RIP-ACK packet received. Please check on server end.")
             else:
@@ -251,25 +261,9 @@ class PEEPClient(StackingProtocol):
                 ripbites = self.rip.__serialize__() # :P
                 print(" Writing down RIP Packet to wire after updating window ")
                 self.transport.write(ripbites)
-                self.tz = Timerx(0.1, self.connection_timeout, self.rip)
+                '''self.tz = Timerx(0.1, self.connection_timeout, self.rip)
                 self.chabi = self.rip.SequenceNumber
-                self.t[self.chabi] = self.tz
-            else:
-                self.rip = PEEPpacket()
-                self.rip.Type = 3
-                self.rip.Acknowledgement = self.global_number_ack
-                self.rip.SequenceNumber = self.update_sequence(chunk)
-                print("RIP SEQ number and ACK number is",self.rip.SequenceNumber,self.rip.Acknowledgement)
-                calcChecksum = PEEPClient(self.loop)
-                self.rip.Checksum = calcChecksum.calculateChecksum(self.rip)
-                ripbites = self.rip.__serialize__()  # :P
-                print(" REEEEWriting down RIP Packet to wire after updating window ")
-                self.transport.write(ripbites)
-                (self.t[self.chabi]).cancel()
-                self.t.pop(self.chabi)
-                self.tz = Timerx(0.1, self.connection_timeout, self.rip)
-                self.chabi = self.rip.SequenceNumber
-                self.t[self.chabi] = self.tz
+                self.t[self.chabi] = self.tz'''
 
         else:
             self.Cencap = PEEPpacket()
@@ -352,23 +346,35 @@ class PEEPClient(StackingProtocol):
         self.sending_window_count += 1
         self.key = self.global_number_seq
         self.sending_window[self.key] = self.packet
-        keylist = self.sending_window.keys()
-        self.keylist1 = sorted(keylist)
         return self.packet
+
+
+    def sending_ripack(self, RIP_PKT):
+        self.close_timers()
+        # RIPack
+        ripack = PEEPpacket()
+        self.RIP_PKT = RIP_PKT
+        self.exc = 0
+        ripack.Type = 4
+        ripack.Acknowledgement = self.RIP_PKT.SequenceNumber + 50
+        ripack.SequenceNumber = 0
+        calcChecksum = PEEPClient(self.loop)
+        ripack.Checksum = calcChecksum.calculateChecksum(ripack)
+        ripz = ripack.__serialize__()
+        print("Sent RIP-ACK:",ripack.Acknowledgement,"to Server.")
+        self.transport.write(ripz)
 
     def pop_sending_window(self, AckNum):
         print ("Client sending window count",self.sending_window_count)
         self.AckNum = AckNum
+        keylist = []
+        keylist = self.sending_window.keys()
+        self.keylist1 = sorted(keylist)
         for key in self.keylist1:
             #print ("Key is: ", key)
             if (self.AckNum > key):
                 print ("#Client Window#:",self.keylist1)
                 print("Key value to pop is", key)
-                seqs = list(self.t.keys())
-                for chabi in seqs:
-                    if self.AckNum > chabi:
-                        (self.t[chabi]).cancel()
-                        self.t.pop(chabi)
                 self.sending_window.pop(key)
                 self.keylist1.pop(0)
                 self.sending_window_count = self.sending_window_count - 1
@@ -387,12 +393,10 @@ class PEEPClient(StackingProtocol):
             Data = b'rip'
             self.write(Data)
 
-        if self.sending_window_count == 0 and self.ripack_received==1 and self.backlog_window == []:
-            print ("Recieved RIP ACK.. Closing client connection")
-            self.close_timers()
-            self._state += 1
-            self.connection_lost()
-
+        if self.sending_window_count == 0 and self.rip_received == 1 and self.backlog_window == []:
+                         #and self.global_number_ack == self.RIP_PKT.SequenceNumber + 50:
+                         #self.sendack(self.global_number_ack)
+                         self.sending_ripack(self.RIP_PACKET)
 
         return
 
